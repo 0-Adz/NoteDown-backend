@@ -6,9 +6,10 @@ const { findOne } = require('../models/User');
 const bcrypt = require('bcryptjs');
 var jwt = require('jsonwebtoken');
 const JWT_SECRET = 'Aadiisagoodboy';
+var fetchuser = require('../middleware/fetchuser');
 
 
-// create a user using post "/api/auth/createuser". No login required
+// ROUTE 1 : create a user using post "/api/auth/createuser". No login required
 router.post('/createuser',[
     body('name', 'Enter a valid name').isLength({min: 3}),
     body('email', 'Enter a valid email').isEmail(),
@@ -49,18 +50,18 @@ try {
 
 })
 
-// Authenticating a user using post "/api/auth/login". No login required
+// ROUTE 2 : Authenticating a user using post "/api/auth/login". No login required
 router.post('/login',[
   body('email', 'Enter a valid email').isEmail(),
   body('password', 'Password cannot be blank').exists(),
 ], async (req,res)=>{
-// If there is an errors, return Bad request and the errors
-const errors = validationResult(req);
-if (!errors.isEmpty()) {
-  return res.status(400).json({ errors: errors.array() });
-}
+  // If there is an errors, return Bad request and the errors
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({ errors: errors.array() });
+  }
 
-const {email,password} = req.body;
+  const {email,password} = req.body;
 try {
   let user = await User.findOne({email});
   if(!user){
@@ -82,4 +83,17 @@ try {
   res.status(500).send("Internal server error");
 }
 })
-module.exports = router;
+
+// ROUTE 3 : Getting logged in user details using post "/api/auth/getuser". login required
+router.post('/getuser',fetchuser, async (req,res)=>{
+  try {
+  userId=req.user.id;
+  let user =await User.findById(userId).select("-password")
+  res.send(user)
+  
+} catch (error) {
+  console.error(error.message);
+  res.status(500).send("Internal server error");
+}
+})
+module.exports = router
