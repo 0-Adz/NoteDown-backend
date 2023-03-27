@@ -9,7 +9,7 @@ const JWT_SECRET = 'Aadiisagoodboy';
 var fetchuser = require('../middleware/fetchuser');
 
 
-// ROUTE 1 : create a user using post "/api/auth/createuser". No login required
+// ROUTE 1 : create a user using : POST "/api/auth/createuser". No login required
 router.post('/createuser',[
     body('name', 'Enter a valid name').isLength({min: 3}),
     body('email', 'Enter a valid email').isEmail(),
@@ -50,7 +50,7 @@ try {
 
 })
 
-// ROUTE 2 : Authenticating a user using post "/api/auth/login". No login required
+// ROUTE 2 : Authenticating a user using : POST "/api/auth/login". No login required
 router.post('/login',[
   body('email', 'Enter a valid email').isEmail(),
   body('password', 'Password cannot be blank').exists(),
@@ -84,7 +84,7 @@ try {
 }
 })
 
-// ROUTE 3 : Getting logged in user details using post "/api/auth/getuser". login required
+// ROUTE 3 : Getting logged in user details using : POST "/api/auth/getuser". login required
 router.post('/getuser',fetchuser, async (req,res)=>{
   try {
   userId=req.user.id;
